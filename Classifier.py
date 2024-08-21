@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 
 class Classifier:
-    def __init__(self, dataMananger, load_model=True):
+    def __init__(self, dataMananger, load_model=True, filename=None):
         self.dataMananger = dataMananger
         self.trainloader = self.dataMananger.trainloader
         self.testloader = self.dataMananger.testloader
@@ -29,7 +29,7 @@ class Classifier:
         self.replace_model_last_layer(len(self.classes))
 
         if load_model is True:
-            self.load_model()
+            self.load_model(filename=filename)
 
         self.model.to(self.device)
         self.create_loss_function()
@@ -40,19 +40,19 @@ class Classifier:
         #     loss = None
         #     return loss
         # self.loss_function = custom_loss
-        self.loss_function = nn.CrossEntropyLoss()
+        # self.loss_function = nn.CrossEntropyLoss()
 
-        # from CostSensitiveLoss import CostSensitiveLoss
-        # # 定义成本矩阵
-        # cost_matrix = [
-        #     [0, 2, 5, 3, 4],
-        #     [2, 0, 6, 4, 3],
-        #     [5, 6, 0, 1, 2],
-        #     [3, 4, 1, 0, 5],
-        #     [4, 3, 2, 5, 0]
-        # ]
-        # # 使用自定义损失函数
-        # self.loss_function = CostSensitiveLoss(cost_matrix)
+        from CostSensitiveLoss import CostSensitiveLoss
+        # 定义成本矩阵
+        cost_matrix = [
+            [0, 2, 5, 3, 4],
+            [2, 0, 6, 4, 3],
+            [5, 6, 0, 1, 2],
+            [3, 4, 1, 0, 5],
+            [4, 3, 2, 5, 0]
+        ]
+        # 使用自定义损失函数
+        self.loss_function = CostSensitiveLoss(cost_matrix)
 
     def replace_model_last_layer(self, n_class):
         last_layer_name, last_layer = list(self.model.named_modules())[-1]
@@ -82,7 +82,7 @@ class Classifier:
                     os.listdir(self.artifacts_dir + "checkpoint/")
                 )[-1]
             self.model.load_state_dict(
-                torch.load("%s/checkpoint/%s" % (self.artifacts_dir, filename))
+                torch.load(filename)
             )
             print("%s successfully loaded..." % filename)
         except:
@@ -120,7 +120,7 @@ class Classifier:
             if save is True:
                 self.save_model()
 
-    def test(self, on_train_set=False):
+    def test(self, on_train_set=False, file=None):
         holder = {}
         holder['y_true'] = []
         holder['y_hat'] = []
@@ -150,5 +150,5 @@ class Classifier:
         y_true_all = holder['y_true']
         y_pred_all = holder['y_hat']
         M = confusion_matrix(y_true_all, y_pred_all)
-        print("Confusion matrix: \n", M)
-        print(classification_report(y_true_all, y_pred_all))
+        print("Confusion matrix: \n", M, file=file)
+        print(classification_report(y_true_all, y_pred_all), file=file)
