@@ -87,7 +87,7 @@ class DataManager:
         return images_bchw, y_true
 
 
-data_dir = './train'
+data_dir = 'data'
 
 dataset = DataManager(data_dir)
 dataset.show_sample_images()
