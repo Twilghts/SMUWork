@@ -87,7 +87,7 @@ class DataManager:
         return images_bchw, y_true
 
 
-data_dir = 'data'
+data_dir = '../data'
 
 dataset = DataManager(data_dir)
 dataset.show_sample_images()
@@ -103,7 +103,7 @@ class Classifier:
         self.trainloader = self.dataMananger.trainloader
         self.testloader = self.dataMananger.testloader
         self.classes = self.dataMananger.classes
-        self.artifacts_dir = "./artifact/"
+        self.artifacts_dir = "../artifact/"
         if not os.path.exists(self.artifacts_dir):
             os.makedirs(self.artifacts_dir)
 
@@ -122,11 +122,10 @@ class Classifier:
         self.create_loss_function()
 
     def create_loss_function(self):
-        def custom_loss(y_pred_logits, y_true):
-            """ Do what you want here, then return the loss """
-            loss = None
-            return loss
-
+        # def custom_loss(y_pred_logits, y_true):
+        #     """ Do what you want here, then return the loss """
+        #     loss = None
+        #     return loss
         # self.loss_function = custom_loss
         self.loss_function = nn.CrossEntropyLoss()
 
